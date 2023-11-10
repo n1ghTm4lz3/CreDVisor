@@ -16,7 +16,8 @@ struct Credential {
 	char account[50];
 	char password[50];
 	char url[100];
-} CreDefault = {"Test Account", "U53RN4M3", "P455W0RD", "http://website.com"};
+	int no;
+} CreDefault = {"Test Account", "U53RN4M3", "P455W0RD", "http://website.com", -1};
 
 
 void Help(int paragraph);
@@ -112,10 +113,11 @@ void Show(struct Credential *cred) {
 void FileHandling(int flag, struct Credential *cred) {
 	FILE *file;
 	time_t timestamp;
+	char buffer[300] = {0};
 
 	file = fopen("src/creds", "a+");
 
-	switch(flag){
+	switch(flag) {
 		case 0:
 			break;
 		case 1:
@@ -125,6 +127,57 @@ void FileHandling(int flag, struct Credential *cred) {
 			fprintf(file, "\"url\":\"%s\", ", cred->url);
 			fprintf(file, "\"timestamp\":%ld\n", timestamp);
 			break;
+		case 2:
+			int total = 0;
+			
+			memset(buffer, 0, sizeof(buffer));
+			while(fgets(buffer, 300, file) != NULL) {
+				char id[20] = {0};
+				int i, j;
+
+				for(i = 6, j = 0; ; i++, j++) {
+					if(buffer[i] == '"')
+						break;
+					else
+						id[j] = buffer[i];
+				}
+				fprintf(stdout, "(%2d) %s\n", total, id);
+				total += 1;
+			}
+			cred->no = total;
+			break;
+		  case 3:
+			int counter = 0;
+
+			memset(buffer, 0, sizeof(buffer));
+			while(fgets(buffer, 300, file) != NULL) {
+				char *key_value;
+
+				if(counter == cred->no){
+					key_value = strtok(buffer, ", \":");
+					while(key_value != NULL) {
+						if (strcmp(key_value, "id") == 0){
+							key_value = strtok(NULL, ", \":");	//Next Token
+							strcpy(cred->id, key_value);
+						} else if (strcmp(key_value, "account") == 0){
+							key_value = strtok(NULL, ", \":");	//Next Token
+							strcpy(cred->account, key_value);
+						} else if (strcmp(key_value, "password") == 0){
+							key_value = strtok(NULL, ", \":");	//Next Token
+							strcpy(cred->password, key_value);
+						} else if (strcmp(key_value, "url") == 0){
+							key_value = strtok(NULL, ", \"");	//Next Token
+							key_value = strtok(NULL, ", \"");	//Next Token
+							strcpy(cred->url, key_value);
+						}
+						key_value = strtok(NULL, ", \":");	//Next Token
+					}
+					break;
+				} else {
+					counter += 1;
+				}
+			}
+		  	break;
 		default:
 			break;
 	}
@@ -133,5 +186,20 @@ void FileHandling(int flag, struct Credential *cred) {
 }
 
 void Search(struct Credential *cred){
-	Show(cred);
+	int selection = -1;
+
+	printf("\nSelect the following credential card.\n");
+	FileHandling(2, cred);
+	printf("> ");
+	scanf("%d", &selection);
+
+	if(selection < 0 || selection >= cred->no){
+		printf("Out of range. Please re-select the credential card.\n");
+		printf("> ");
+		scanf("%d", &selection);
+	} else {
+		cred->no = selection;
+		FileHandling(3, cred);
+		Show(cred);
+	}
 }
