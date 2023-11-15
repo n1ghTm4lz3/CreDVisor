@@ -23,8 +23,8 @@ struct Credential {
 void Help(int paragraph);
 void UserInput(struct Credential *cred);
 void Show(struct Credential *cred);
-void FileHandling(int flag, struct Credential *cred);
-void Search(struct Credential *cred);
+int FileHandling(int flag, struct Credential *cred);
+int Search(struct Credential *cred);
 void Encrypt();
 void Decrypt();
 
@@ -110,7 +110,7 @@ void Show(struct Credential *cred) {
 	printf("URL:      %s\n", cred->url);
 }
 
-void FileHandling(int flag, struct Credential *cred) {
+int FileHandling(int flag, struct Credential *cred) {
 	FILE *file;
 	time_t timestamp;
 	char buffer[300] = {0};
@@ -119,6 +119,11 @@ void FileHandling(int flag, struct Credential *cred) {
 
 	switch(flag) {
 		case 0:
+			if(fgets(buffer, 300, file) == NULL) {
+				printf("!! THERE IS NO CREDENTIAL BE MANAGED !!\n");
+				fclose(file);
+				return -1;
+			}
 			break;
 		case 1:
 			fprintf(file, "\"id\":\"%s\", ", cred->id);
@@ -129,13 +134,13 @@ void FileHandling(int flag, struct Credential *cred) {
 			break;
 		case 2:
 			int total = 0;
-			
+
 			memset(buffer, 0, sizeof(buffer));
 			while(fgets(buffer, 300, file) != NULL) {
 				char id[20] = {0};
 				int i, j;
 
-				for(i = 6, j = 0; ; i++, j++) {
+				for(i = 6, j = 0; i < 300; i++, j++) {
 					if(buffer[i] == '"')
 						break;
 					else
@@ -183,23 +188,27 @@ void FileHandling(int flag, struct Credential *cred) {
 	}
 
 	fclose(file);
+	return 0;
 }
 
-void Search(struct Credential *cred){
+int Search(struct Credential *cred){
 	int selection = -1;
 
 	printf("\nSelect the following credential card.\n");
-	FileHandling(2, cred);
-	printf("> ");
-	scanf("%d", &selection);
-
-	if(selection < 0 || selection >= cred->no){
-		printf("Out of range. Please re-select the credential card.\n");
+	if(FileHandling(0, cred) == -1){
+		return 0;
+	} else {
+		FileHandling(2, cred); 
 		printf("> ");
 		scanf("%d", &selection);
-	} else {
-		cred->no = selection;
-		FileHandling(3, cred);
-		Show(cred);
+		if(selection < 0 || selection >= cred->no){
+			printf("Out of range. Please re-select the credential card.\n");
+			printf("> ");
+			scanf("%d", &selection);
+		} else {
+			cred->no = selection;
+			FileHandling(3, cred);
+			Show(cred);
+		}
 	}
 }
