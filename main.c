@@ -114,6 +114,7 @@ int FileHandling(int flag, struct Credential *cred) {
 	FILE *file;
 	time_t timestamp;
 	char buffer[300] = {0};
+	int total = 0, counter = 0;
 
 	file = fopen("src/creds", "a+");
 
@@ -133,8 +134,6 @@ int FileHandling(int flag, struct Credential *cred) {
 			fprintf(file, "\"timestamp\":%ld\n", timestamp);
 			break;
 		case 2:
-			int total = 0;
-
 			memset(buffer, 0, sizeof(buffer));
 			while(fgets(buffer, 300, file) != NULL) {
 				char id[20] = {0};
@@ -152,8 +151,6 @@ int FileHandling(int flag, struct Credential *cred) {
 			cred->no = total;
 			break;
 		  case 3:
-			int counter = 0;
-
 			memset(buffer, 0, sizeof(buffer));
 			while(fgets(buffer, 300, file) != NULL) {
 				char *key_value;
