@@ -207,5 +207,6 @@ int Search(struct Credential *cred){
 			FileHandling(3, cred);
 			Show(cred);
 		}
+		return 0;
 	}
 }
