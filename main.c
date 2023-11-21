@@ -79,13 +79,24 @@ void Help(int paragraph) {
 	*/
 	switch(paragraph){
 		case -2:
-			printf("Initial Message\n");
+			printf("+===============================================================+\n");
+			printf("|                                                               |\n");
+			printf("|                          CreDVisor                            |\n");
+			printf("|                           ver 1.0                             |\n");
+			printf("|                        (by n1ghTm4lz3)                        |\n");
+			printf("|                                                               |\n");
+			printf("| CreDVisor is a tool that manages our own credentials. There   |\n");
+			printf("| are functions such as saving credentials, generating password |\n");
+			printf("| , credential encryption, etc.                                 |\n");
+			printf("|                                                               |\n");
+			printf("+===============================================================+");
 			break;
 		default:
-			printf("┌ (1) Show Current Credential Card\n");
-			printf("├ (2) Input Credential\n");
-			printf("├ (3) Search Credential\n");
-			printf("└ (0) Quit\n");
+			printf("+-- Options ----------------------------+\n");
+			printf("| (1) Show Current Credential Card      |\n");
+			printf("| (2) Input Credential                  |\n");
+			printf("| (3) Search Credential                 |\n");
+			printf("+-------------------- Press 0 to Quit --+\n");
 			break;
 	}
 }
