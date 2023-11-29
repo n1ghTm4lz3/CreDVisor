@@ -9,6 +9,7 @@ Description:
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <stdbool.h>
 
 
 struct Credential {
@@ -25,6 +26,7 @@ void UserInput(struct Credential *cred);
 void Show(struct Credential *cred);
 int FileHandling(int flag, struct Credential *cred);
 int Search(struct Credential *cred);
+void Generation(struct Credential *cred);
 void Encrypt();
 void Decrypt();
 
@@ -49,6 +51,10 @@ int main(void) {
 				break;
 			case 3:
 				Search(CredPTR);
+				action = -1;
+				break;
+			case 4:
+				Generation(CredPTR);
 				action = -1;
 				break;
 			case -1:
@@ -92,11 +98,12 @@ void Help(int paragraph) {
 			printf("+===============================================================+");
 			break;
 		default:
-			printf("+-- Options ----------------------------+\n");
+			printf("+~~ MENU ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+\n");
 			printf("| (1) Show Current Credential Card      |\n");
 			printf("| (2) Input Credential                  |\n");
 			printf("| (3) Search Credential                 |\n");
-			printf("+-------------------- Press 0 to Quit --+\n");
+			printf("| (4) Generate Random Password          |\n");
+			printf("+~~~~~~~~~~~~~~~~~~~~ Press 0 to Quit ~~+\n");
 			break;
 	}
 }
@@ -221,3 +228,65 @@ int Search(struct Credential *cred){
 		return 0;
 	}
 }
+
+void Generation(struct Credential *cred){
+	int size = 0, options, i, temp;
+	char number[10] = "0123456789";
+	char lowercase[26] = "abcdefghijklmnopqrstuvwxyz";
+	char uppercase[26] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	char symbol[21] = "!@#$%^&*_+-=;:,./<>?~";
+	bool elements[4] = {0, 0, 0, 0};
+
+	printf("\nInput the size of random password: ");
+	scanf("%d", &size);
+	char rand_pass[size];
+
+	printf("Select elements which contains within the password:\n");
+	printf("+-- Options ----------------------------+\n");
+	printf("| (1) Number                            |\n");
+	printf("| (2) Lowercase Alphabet                |\n");
+	printf("| (3) Uppercase Alphabet                |\n");
+	printf("| (4) Symbol                            |\n");
+	printf("+---------------------------------------+\n");
+	printf("(If contains all elements, input 1234)\n");
+	printf("> ");
+	scanf("%d", &options);
+	
+	for(i = 0; i < 4; i++) {
+		temp = (options % 10) - 1;
+		if(temp == -1) {
+			break;
+		} else {
+			elements[temp] = 1;
+			options /= 10;
+		}
+	}
+	
+	srand(time(NULL));
+	for(i = 0; i < size; i++) {
+		do {
+			options = (rand() % 4);
+		} while (elements[options] == 0);
+
+		switch(options){
+			case 0:
+				temp = rand() % 10;
+				rand_pass[i] = number[temp];
+				break;
+			case 1:
+				temp = rand() % 26;
+				rand_pass[i] = lowercase[temp];
+				break;
+			case 2:
+				temp = rand() % 26;
+				rand_pass[i] = uppercase[temp];
+				break;
+			case 3:
+				temp = rand() % 21;
+				rand_pass[i] = symbol[temp];
+				break;
+		}
+	}
+	printf("%s", rand_pass);
+}
+
