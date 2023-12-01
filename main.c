@@ -22,7 +22,7 @@ struct Credential {
 
 
 void Help(int paragraph);
-void UserInput(struct Credential *cred);
+void UserInput(struct Credential *cred, bool flag);
 void Show(struct Credential *cred);
 int FileHandling(int flag, struct Credential *cred);
 int Search(struct Credential *cred);
@@ -45,8 +45,7 @@ int main(void) {
 				action = -1;
 				break;
 			case 2:
-				UserInput(CredPTR);
-				FileHandling(1, CredPTR);
+				UserInput(CredPTR, 1);
 				action = -1;
 				break;
 			case 3:
@@ -108,16 +107,22 @@ void Help(int paragraph) {
 	}
 }
 
-void UserInput(struct Credential *cred) {
+void UserInput(struct Credential *cred, bool flag) {
 	printf("\nPlease input your credential information.\n");
 	printf("ID - The name of this credential card\n=> ");
 	scanf("%s", cred->id);
 	printf("Account - The account of the credential\n=> ");
 	scanf("%s", cred->account);
-	printf("Password - The password of the credential\n=> ");
-	scanf("%s", cred->password);
+	
+	if(flag){
+		printf("Password - The password of the credential\n=> ");
+		scanf("%s", cred->password);
+	}
+
 	printf("URL - The entry point where the credential will be used\n=> ");
 	scanf("%s", cred->url);
+	
+	FileHandling(1, cred);
 }
 
 void Show(struct Credential *cred) {
@@ -231,6 +236,7 @@ int Search(struct Credential *cred){
 
 void Generation(struct Credential *cred){
 	int size = 0, options, i, temp;
+	char newCard[2];
 	char number[10] = "0123456789";
 	char lowercase[26] = "abcdefghijklmnopqrstuvwxyz";
 	char uppercase[26] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -287,6 +293,14 @@ void Generation(struct Credential *cred){
 				break;
 		}
 	}
-	printf("%s", rand_pass);
+	
+	printf("\n[!] Random Password: %s\n", rand_pass);
+
+	printf("\n[?] Do you want to new a credential card? (y/n)\n> ");
+	scanf("%s", newCard);
+	if (newCard[0] == 'Y' | newCard[0] == 'y') {
+		strcpy(cred->password, rand_pass);
+		UserInput(cred, 0);
+	}
 }
 
