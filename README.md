@@ -4,7 +4,7 @@
 ---
 ## Installation
 ```bash
-gcc main.c -o CreDVisor
+gcc -o CreDVisor project/main.c project/lib/init.c project/lib/credio.c
 ```
 
 ## Execution
